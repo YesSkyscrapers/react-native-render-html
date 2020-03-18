@@ -374,6 +374,17 @@ export default class HTML extends PureComponent {
         return this.associateRawTexts(RNElements);
     }
 
+
+    recursivelyCheckParentTagExists(element, tag) {
+        if (element.name == tag) {
+            return true
+        } else if (element.parent != null) {
+            return this.recursivelyCheckParentTagExists(element.parent, tag);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Takes the parsed nodes from mapDOMNodesTORNElements and actually renders native components.
      * Calls the utils that convert the CSS into react-native compatible styles and renders custom
@@ -465,7 +476,8 @@ export default class HTML extends PureComponent {
                 (!tagsStyles || !tagsStyles[tagName]) ? (Wrapper === Text ? this.defaultTextStyles : this.defaultBlockStyles)[tagName] : undefined,
                 tagsStyles ? tagsStyles[tagName] : undefined,
                 classStyles,
-                convertedCSSStyles
+                convertedCSSStyles,
+                this.recursivelyCheckParentTagExists(element, "ol") ? { marginTop: 0, marginBottom: 0 } : undefined
             ]
                 .filter((s) => s !== undefined);
 
